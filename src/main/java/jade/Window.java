@@ -18,12 +18,17 @@ public class Window {
     private int width, hight;
     private String title;
     private long glfwindow;
+    private float r,g,b,a;
 
     private static Window window = null;
     private Window(){
         this.width = 1080;
         this.hight = 720;
         title = "THe game TM";
+        r=0;
+        g=0;
+        b=0;
+        a=0;
     }
 
     public static Window get(){
@@ -39,6 +44,14 @@ public class Window {
         init();
         loop();
 
+        //not nececary
+        //free memory
+        glfwFreeCallbacks(glfwindow);
+        glfwDestroyWindow(glfwindow);
+
+        //terminate and free error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
     }
 
     public void init(){
@@ -61,6 +74,13 @@ public class Window {
         if ( glfwindow == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
+        glfwSetCursorPosCallback(glfwindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwindow, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(glfwindow, MouseListener::mouseScrollCallback);
+
+        glfwSetKeyCallback(glfwindow, KeyListener::keyCallback);
+
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwindow);
 
@@ -81,8 +101,7 @@ public class Window {
 
     public void loop(){
 
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
 
 
 
@@ -93,7 +112,23 @@ public class Window {
             // invoked during this call.
             glfwPollEvents();
 
+            // Set the clear color
+            glClearColor(r, g, b, a);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+
+            if(KeyListener.isKeyPressed(GLFW_KEY_1))
+                r = 1;
+            else
+                r = 0;
+            if(KeyListener.isKeyPressed(GLFW_KEY_2))
+                g = 1;
+            if(KeyListener.isKeyPressed(GLFW_KEY_3))
+                b = 1;
+
+
+
 
             glfwSwapBuffers(glfwindow); // swap the color buffers
 
